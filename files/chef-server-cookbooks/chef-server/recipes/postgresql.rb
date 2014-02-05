@@ -149,7 +149,7 @@ execute "create #{db_name} database" do
 end
 
 execute "install_schema" do
-  command "sqitch --db-user #{pg_user} deploy --to-target @1.0.0" # same as preflight
+  command "sqitch --db-user #{pg_user} deploy" # same as preflight
   cwd "/opt/chef-server/embedded/service/chef-server-schema"
   user pg_user
   action :nothing
@@ -160,7 +160,7 @@ execute "migrate_database" do
   command "sqitch --db-user #{pg_user} deploy"
   cwd "/opt/chef-server/embedded/service/chef-server-schema"
   user pg_user
-  only_if { pg_helper.is_running? && pg_helper.managed_by_sqitch? }
+  only_if { pg_helper.is_running? && pg_helper.managed_by_sqitch? && pg_helper.needs_schema_update? }
   action :run
 end
 
